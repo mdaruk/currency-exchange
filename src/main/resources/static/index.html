@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<head>
+    <title>The Currency Conversion Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript">
+    function clearFormResult(){
+        document.getElementById("resultAmount").value = '';
+    }
+    function submitForm(){
+        clearFormResult();
+        var jsonData = {"amount" : document.getElementById("myValue").value,
+                        "myCurrencyCode" : document.getElementById("myCurrencyCode").value,
+                        "targetCurrencyCode" : document.getElementById("targetCurrencyCode").value,};
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            myObj = JSON.parse(this.responseText);
+            document.getElementById("resultAmount").value = myObj.amount;
+          } else if(this.readyState == 4 && this.status == 500) {
+            myObj = JSON.parse(this.responseText);
+            alert("Error: " + this.status + " " + myObj.message);
+          } else if(this.readyState == 4 && this.status != 200) {
+            alert("Error: " + this.status);
+          }
+        }
+        xmlhttp.open("POST", "convertCurrency", true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.send(JSON.stringify(jsonData));
+    }
+</script>
+</head>
+<body>
+<H1>Currency value convert form</H1>
+<form method="post">
+    <p>Convert from:</p>
+    <p>Amount:<input id="myValue" type='text' name='value' value='1' onchange="clearFormResult()">, Currency <input id="myCurrencyCode" type='text' name='myCurrency' value='GBP' onchange="clearFormResult()"></p>
+    <p>Convert to:</p>
+    <p>Amount:<input id="resultAmount" type='text' name='resultAmount' value=''>, Currency:<input id="targetCurrencyCode" type='text' name='targetCurrency' value='EUR' onchange="clearFormResult()"></p>
+    <p>Click <i>Convert</i> button to see result --> <input type="button" value="Convert" onclick="submitForm()"></p>
+</form>
+<H1>REST API details:</H1>
+<p>REST API URL: 127.0.0.1:8080/convertCurrency</p>
+<p>Example request:</p>
+<p>Method: POST</p>
+<p>Content-Type:application/json</p>
+<p>Body: {"amount":100,"myCurrencyCode":"GBP","targetCurrencyCode":"EUR"}</p>
+<p>Result: {"amount": 115.147934,"currencyCode": "EUR"}</p>
+</body>
+</html>
